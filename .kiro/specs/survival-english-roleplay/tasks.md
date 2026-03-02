@@ -15,13 +15,13 @@
   - フロントエンド用の`Dockerfile`を作成
   - _要件: 11.1_
 
-- [ ] 1.2 Next.jsプロジェクトの初期化
+- [x] 1.2 Next.jsプロジェクトの初期化
   - `frontend/`ディレクトリにNext.js 14プロジェクトを作成
   - TypeScript、Tailwind CSS、ESLintを設定
   - `package.json`に必要な依存関係を追加
   - _要件: 11.1_
 
-- [ ] 1.3 プロジェクト構造の作成
+- [x] 1.3 プロジェクト構造の作成
   - `app/`, `components/`, `contexts/`, `hooks/`, `lib/`, `data/`, `types/`, `styles/`ディレクトリを作成
   - 基本的なディレクトリ構造を整備
   - _要件: 11.1_
