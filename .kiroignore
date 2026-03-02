@@ -1,0 +1,12 @@
+# 重いデータファイル（AIが読んでも意味がなく、トークンを浪費する）
+*.csv
+*.jsonl
+*.sqlite3
+
+# Docker関連（Dockerfile自体は読ませるべきですが、ビルドログなどは除外）
+.devcontainer/syslog*
+docker-compose.override.yml
+
+# ドキュメント生成物
+# Kiroが生成したSpecファイルなどをAIがループして読み直さないようにする場合
+*.spec.md 
