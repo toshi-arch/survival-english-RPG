@@ -50,7 +50,7 @@
   - キーワードベースの応答マッピングを実装（initial, statue|liberty, subway|train, how|get, ready, defaultパターン）
   - _要件: 2.2, 2.3, 11.2_
 
-- [ ] 3.2 応答マッチングロジックの実装
+- [x] 3.2 応答マッチングロジックの実装
   - `lib/responseMatching.ts`にキーワードマッチング関数を実装
   - 大文字小文字を区別しない検索機能
   - デフォルト応答のフォールバック処理
