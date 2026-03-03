@@ -1,3 +1,88 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* カスタムスタイル */
+
+/* スムーズなスクロール */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ボディのデフォルトスタイル */
+body {
+  @apply bg-gray-50 text-gray-900;
+}
+
+/* カスタムスクロールバー */
+.chat-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded hover:bg-gray-400;
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* カスタムコンポーネントスタイル */
+@layer components {
+  /* ボタンスタイル */
+  .btn-primary {
+    @apply px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg 
+           hover:bg-indigo-700 transition-colors shadow-md hover:shadow-lg;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-gray-200 text-gray-800 font-semibold rounded-lg 
+           hover:bg-gray-300 transition-colors;
+  }
+
+  /* カードスタイル */
+  .card {
+    @apply bg-white rounded-lg shadow-md p-6;
+  }
+
+  /* 入力フィールドスタイル */
+  .input-field {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg 
+           focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent;
+  }
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 768px) {
+  .chat-ui {
+    min-height: 400px;
+  }
+  
+  .map-ui svg {
+    max-height: 300px;
+  }
+}
+
+/* プリント用スタイル */
+@media print {
+  .audio-interface,
+  .chat-input {
+    display: none;
+  }
+}
