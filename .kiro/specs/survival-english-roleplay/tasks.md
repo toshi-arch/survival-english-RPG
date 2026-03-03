@@ -133,7 +133,7 @@
 
 ### 6. ゲーム画面の統合
 
-- [ ] 6.1 ゲームページの実装
+- [x] 6.1 ゲームページの実装
   - `app/game/page.tsx`を作成
   - GameStateProviderでラップ
   - 左パネル（MapUI, InformationNote）と右パネル（ChatUI, AudioInterface）のレイアウト
