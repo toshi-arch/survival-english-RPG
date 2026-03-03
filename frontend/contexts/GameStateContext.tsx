@@ -8,8 +8,9 @@
  */
 
 import React, { createContext, useContext, useReducer, ReactNode, Dispatch } from 'react';
-import { GameState, GameAction, Scenario, Message, NPCResponse, MovementOption, PenaltyType } from '@/types';
+import { GameState, GameAction, Scenario, Message } from '@/types';
 import { statueLibertyScenario } from '@/data/scenarios/statueLibertyScenario';
+import { validateScenario } from '@/lib/validation';
 
 // ============================================================================
 // Context定義
@@ -30,6 +31,20 @@ const GameStateContext = createContext<GameStateContextType | null>(null);
  * シナリオから初期状態を生成
  */
 function createInitialState(scenario: Scenario): GameState {
+  // シナリオの検証
+  const validationResult = validateScenario(scenario);
+  if (!validationResult.isValid) {
+    console.error('Scenario validation failed:', validationResult.errors);
+    // エラーがあっても続行（開発中のため）
+    validationResult.errors.forEach(error => {
+      if (error.severity === 'error') {
+        console.error(`[${error.severity}] ${error.field}: ${error.message}`);
+      } else {
+        console.warn(`[${error.severity}] ${error.field}: ${error.message}`);
+      }
+    });
+  }
+
   const currentState = scenario.states[scenario.startStateId];
   
   // 現在のStateの必須スロットを初期化
@@ -70,7 +85,8 @@ function createInitialState(scenario: Scenario): GameState {
  * ゲーム状態を更新するReducer
  */
 function gameStateReducer(state: GameState, action: GameAction): GameState {
-  switch (action.type) {
+  try {
+    switch (action.type) {
     // メッセージ送信
     case 'SEND_MESSAGE': {
       const newMessage: Message = {
@@ -243,6 +259,11 @@ function gameStateReducer(state: GameState, action: GameAction): GameState {
 
     default:
       return state;
+    }
+  } catch (error) {
+    console.error('Error in gameStateReducer:', error);
+    // エラーが発生しても現在の状態を返す
+    return state;
   }
 }
 
