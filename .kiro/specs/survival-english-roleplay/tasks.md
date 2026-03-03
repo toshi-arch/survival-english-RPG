@@ -111,14 +111,14 @@
   - メッセージ送信時のdispatch処理
   - _要件: 8.1, 8.2, 8.6, 8.7, 8.8_
 
-- [ ] 5.4 MovementOptionsコンポーネントの実装
+- [x] 5.4 MovementOptionsコンポーネントの実装
   - `components/MovementOptions.tsx`を作成
   - 移動選択肢のボタン表示
   - 選択時の確認ダイアログ
   - 選択後のState遷移処理
   - _要件: 3.1, 3.2, 3.3_
 
-- [ ] 5.5 AudioInterfaceコンポーネントの実装（UIのみ）
+- [x] 5.5 AudioInterfaceコンポーネントの実装（UIのみ）
   - `components/AudioInterface.tsx`を作成
   - マイクボタン（クリック時に「開発中」メッセージ表示）
   - スピーカーアイコンとオン/オフトグル（UIのみ）
