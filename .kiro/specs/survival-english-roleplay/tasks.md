@@ -89,7 +89,7 @@
 
 ### 5. UIコンポーネントの実装
 
-- [ ] 5.1 MapUIコンポーネントの実装
+- [x] 5.1 MapUIコンポーネントの実装
   - `components/MapUI.tsx`を作成
   - SVGベースのマップ表示
   - 現在のStateのハイライト表示
@@ -97,28 +97,28 @@
   - State間の接続線の表示
   - _要件: 1.5, 6.1, 6.2, 6.3, 6.5_
 
-- [ ] 5.2 InformationNoteコンポーネントの実装
+- [x] 5.2 InformationNoteコンポーネントの実装
   - `components/InformationNote.tsx`を作成
   - 必須スロットの一覧表示
   - 埋まっているスロットと空のスロットの視覚的区別
   - スロット値の表示
   - _要件: 7.1, 7.2, 7.3, 7.5_
 
-- [ ] 5.3 ChatUIコンポーネントの実装
+- [x] 5.3 ChatUIコンポーネントの実装
   - `components/ChatUI.tsx`を作成
   - 会話履歴の表示（MessageListコンポーネント）
   - テキスト入力フィールドと送信ボタン
   - メッセージ送信時のdispatch処理
   - _要件: 8.1, 8.2, 8.6, 8.7, 8.8_
 
-- [ ] 5.4 MovementOptionsコンポーネントの実装
+- [x] 5.4 MovementOptionsコンポーネントの実装
   - `components/MovementOptions.tsx`を作成
   - 移動選択肢のボタン表示
   - 選択時の確認ダイアログ
   - 選択後のState遷移処理
   - _要件: 3.1, 3.2, 3.3_
 
-- [ ] 5.5 AudioInterfaceコンポーネントの実装（UIのみ）
+- [x] 5.5 AudioInterfaceコンポーネントの実装（UIのみ）
   - `components/AudioInterface.tsx`を作成
   - マイクボタン（クリック時に「開発中」メッセージ表示）
   - スピーカーアイコンとオン/オフトグル（UIのみ）
