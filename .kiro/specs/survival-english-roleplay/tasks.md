@@ -139,7 +139,7 @@
   - 左パネル（MapUI, InformationNote）と右パネル（ChatUI, AudioInterface）のレイアウト
   - _要件: 11.4_
 
-- [ ] 6.2 ホーム画面の実装
+- [x] 6.2 ホーム画面の実装
   - `app/page.tsx`を作成
   - ゲーム開始ボタンとシナリオ説明
   - ゲーム画面へのナビゲーション
