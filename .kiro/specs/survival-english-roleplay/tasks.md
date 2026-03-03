@@ -64,7 +64,7 @@
 
 ### 4. ゲーム状態管理の実装
 
-- [ ] 4.1 GameStateContextの実装
+- [x] 4.1 GameStateContextの実装
   - `contexts/GameStateContext.tsx`にContext、Provider、Reducerを実装
   - GameStateとGameActionの型定義
   - 初期状態の設定（シナリオ読み込み、開始Stateの設定）
