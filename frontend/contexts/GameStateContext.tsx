@@ -43,6 +43,7 @@ function createInitialState(scenario: Scenario): GameState {
   return {
     scenario,
     currentStateId: scenario.startStateId,
+    visitedStateIds: [scenario.startStateId], // 開始地点を訪問済みに追加
     requiredSlots,
     conversationHistory: [],
     movementOptions: null,
@@ -182,9 +183,15 @@ function gameStateReducer(state: GameState, action: GameAction): GameState {
         requiredSlots[slot] = null;
       });
 
+      // 訪問済みStateに追加
+      const visitedStateIds = state.visitedStateIds.includes(newStateId)
+        ? state.visitedStateIds
+        : [...state.visitedStateIds, newStateId];
+
       return {
         ...state,
         currentStateId: newStateId,
+        visitedStateIds,
         requiredSlots,
         movementOptions: null,
       };

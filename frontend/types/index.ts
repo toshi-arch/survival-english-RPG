@@ -143,6 +143,7 @@ export interface AudioState {
 export interface GameState {
   scenario: Scenario;
   currentStateId: string;
+  visitedStateIds: string[]; // 訪問済みStateのID配列
   requiredSlots: Record<string, string | null>;
   conversationHistory: Message[];
   movementOptions: MovementOption[] | null;

@@ -13,7 +13,7 @@ import { StateNode } from '@/types';
 
 export default function MapUI() {
   const { state } = useGameState();
-  const { scenario, currentStateId } = state;
+  const { scenario, currentStateId, visitedStateIds } = state;
 
   // StateをStateNodeに変換
   const stateNodes: StateNode[] = Object.values(scenario.states).map(s => ({
@@ -126,17 +126,19 @@ export default function MapUI() {
                 />
               )}
 
-              {/* State名ラベル */}
-              <text
-                x={node.position.x}
-                y={node.position.y + 45}
-                textAnchor="middle"
-                fontSize="12"
-                fontWeight={isCurrent ? 'bold' : 'normal'}
-                fill={isCurrent ? '#312e81' : '#475569'}
-              >
-                {node.name}
-              </text>
+              {/* State名ラベル - 現在地、訪問済み、ゴールのみ表示 */}
+              {(isCurrent || visitedStateIds.includes(node.id) || isGoal) && (
+                <text
+                  x={node.position.x}
+                  y={node.position.y + 45}
+                  textAnchor="middle"
+                  fontSize="12"
+                  fontWeight={isCurrent ? 'bold' : 'normal'}
+                  fill={isCurrent ? '#312e81' : '#475569'}
+                >
+                  {node.name}
+                </text>
+              )}
             </g>
           );
         })}
