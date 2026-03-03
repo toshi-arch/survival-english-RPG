@@ -70,12 +70,12 @@
   - 初期状態の設定（シナリオ読み込み、開始Stateの設定）
   - _要件: 1.2, 7.4, 8.6_
 
-- [ ] 4.2 Reducerアクションの実装
+- [x] 4.2 Reducerアクションの実装
   - SEND_MESSAGE, RECEIVE_NPC_RESPONSE, UPDATE_SLOTS, SHOW_MOVEMENT_OPTIONS, SELECT_MOVEMENT, TRANSITION_STATE, APPLY_PENALTY, TOGGLE_VOICE_OUTPUT, SET_RECORDINGアクションを実装
   - 各アクションの状態更新ロジック
   - _要件: 2.6, 3.4, 3.5, 5.1, 7.2, 8.6, 8.7_
 
-- [ ] 4.3 ゲームロジックの実装
+- [x] 4.3 ゲームロジックの実装
   - `lib/gameLogic.ts`にState遷移ロジック、スロット完全性チェック、ペナルティ適用ロジックを実装
   - shouldShowMovementOptions関数
   - processUserMessage関数
