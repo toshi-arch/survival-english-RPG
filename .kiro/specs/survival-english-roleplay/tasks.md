@@ -32,7 +32,7 @@
   - `types/index.ts`にすべての型定義を実装（Scenario, State, Message, NPCResponse, GameSession, PenaltyState, MovementOption, AudioState）
   - _要件: 1.1, 2.1, 3.1, 5.2, 7.1, 8.1, 10.2_
 
-- [ ] 2.2 自由の女神シナリオデータの作成
+- [x] 2.2 自由の女神シナリオデータの作成
   - `data/scenarios/statueLibertyScenario.ts`にシナリオ定義を実装
   - 5つのState（Airport Lobby, City Transit, Battery Park Area, Ferry Terminal, Statue of Liberty）とWrong Placeを定義
   - 各Stateのマップ座標を設定
