@@ -38,7 +38,7 @@
   - 各Stateのマップ座標を設定
   - _要件: 9.1, 9.2, 9.5_
 
-- [ ] 2.3 各Stateの詳細定義
+- [x] 2.3 各Stateの詳細定義
   - `data/states/`に各State定義ファイルを作成（airportLobby.ts, cityTransit.ts, batteryParkArea.ts, ferryTerminal.ts, statueOfLiberty.ts, wrongPlace.ts）
   - 各StateのNPC役割、必須スロット、遷移先を定義
   - _要件: 1.1, 2.1, 3.2, 9.3_
