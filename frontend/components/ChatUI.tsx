@@ -19,6 +19,7 @@ export default function ChatUI() {
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const initializedRef = useRef(false);
 
   // 会話履歴が更新されたら自動スクロール
   useEffect(() => {
@@ -27,7 +28,8 @@ export default function ChatUI() {
 
   // コンポーネントマウント時に初期メッセージを送信
   useEffect(() => {
-    if (conversationHistory.length === 0) {
+    if (!initializedRef.current && conversationHistory.length === 0) {
+      initializedRef.current = true;
       handleInitialMessage();
     }
   }, []);
