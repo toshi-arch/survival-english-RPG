@@ -97,7 +97,7 @@
   - State間の接続線の表示
   - _要件: 1.5, 6.1, 6.2, 6.3, 6.5_
 
-- [ ] 5.2 InformationNoteコンポーネントの実装
+- [x] 5.2 InformationNoteコンポーネントの実装
   - `components/InformationNote.tsx`を作成
   - 必須スロットの一覧表示
   - 埋まっているスロットと空のスロットの視覚的区別
