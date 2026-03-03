@@ -28,17 +28,17 @@
 
 ### 2. 型定義とデータモデルの実装
 
-- [ ] 2.1 型定義ファイルの作成
+- [x] 2.1 型定義ファイルの作成
   - `types/index.ts`にすべての型定義を実装（Scenario, State, Message, NPCResponse, GameSession, PenaltyState, MovementOption, AudioState）
   - _要件: 1.1, 2.1, 3.1, 5.2, 7.1, 8.1, 10.2_
 
-- [ ] 2.2 自由の女神シナリオデータの作成
+- [x] 2.2 自由の女神シナリオデータの作成
   - `data/scenarios/statueLibertyScenario.ts`にシナリオ定義を実装
   - 5つのState（Airport Lobby, City Transit, Battery Park Area, Ferry Terminal, Statue of Liberty）とWrong Placeを定義
   - 各Stateのマップ座標を設定
   - _要件: 9.1, 9.2, 9.5_
 
-- [ ] 2.3 各Stateの詳細定義
+- [x] 2.3 各Stateの詳細定義
   - `data/states/`に各State定義ファイルを作成（airportLobby.ts, cityTransit.ts, batteryParkArea.ts, ferryTerminal.ts, statueOfLiberty.ts, wrongPlace.ts）
   - 各StateのNPC役割、必須スロット、遷移先を定義
   - _要件: 1.1, 2.1, 3.2, 9.3_
