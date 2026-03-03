@@ -45,7 +45,7 @@
 
 ### 3. 静的応答システムの実装
 
-- [ ] 3.1 静的応答データの作成
+- [x] 3.1 静的応答データの作成
   - `data/staticResponses/`に各Stateの応答パターンを作成
   - キーワードベースの応答マッピングを実装（initial, statue|liberty, subway|train, how|get, ready, defaultパターン）
   - _要件: 2.2, 2.3, 11.2_
