@@ -28,7 +28,7 @@
 
 ### 2. 型定義とデータモデルの実装
 
-- [ ] 2.1 型定義ファイルの作成
+- [x] 2.1 型定義ファイルの作成
   - `types/index.ts`にすべての型定義を実装（Scenario, State, Message, NPCResponse, GameSession, PenaltyState, MovementOption, AudioState）
   - _要件: 1.1, 2.1, 3.1, 5.2, 7.1, 8.1, 10.2_
 
