@@ -4,13 +4,14 @@
  * GameStateContext - ゲーム状態管理
  * 
  * React Context + useReducerを使用したゲーム状態の一元管理
- * 要件: 1.2, 7.4, 8.6
+ * 要件: 1.2, 7.4, 8.6, 2.2, 11.2
  */
 
 import React, { createContext, useContext, useReducer, ReactNode, Dispatch } from 'react';
 import { GameState, GameAction, Scenario, Message } from '@/types';
 import { statueLibertyScenario } from '@/data/scenarios/statueLibertyScenario';
 import { validateScenario } from '@/lib/validation';
+import { apiClient } from '@/lib/apiClient';
 
 // ============================================================================
 // Context定義
@@ -19,6 +20,7 @@ import { validateScenario } from '@/lib/validation';
 interface GameStateContextType {
   state: GameState;
   dispatch: Dispatch<GameAction>;
+  sendMessageWithAPI: (userMessage: string) => Promise<void>;
 }
 
 const GameStateContext = createContext<GameStateContextType | null>(null);
@@ -283,8 +285,41 @@ export function GameStateProvider({ children, scenario = statueLibertyScenario }
     createInitialState
   );
 
+  /**
+   * API経由でメッセージを送信する関数
+   * Phase 2でバックエンドAPIを使用してNPC応答を取得
+   */
+  const sendMessageWithAPI = async (userMessage: string) => {
+    try {
+      // ユーザーメッセージを追加
+      dispatch({
+        type: 'SEND_MESSAGE',
+        payload: { content: userMessage },
+      });
+
+      // APIクライアントを使用してNPC応答を取得
+      const npcResponse = await apiClient.sendMessage({
+        sessionId: `session-${Date.now()}`, // TODO: 実際のセッションID管理
+        stateId: state.currentStateId,
+        userMessage,
+        conversationHistory: state.conversationHistory,
+        currentSlots: state.requiredSlots,
+      });
+
+      // NPC応答を追加
+      dispatch({
+        type: 'RECEIVE_NPC_RESPONSE',
+        payload: npcResponse,
+      });
+
+    } catch (error) {
+      console.error('Failed to send message via API:', error);
+      // エラー時はフォールバック応答を使用（APIClientが自動的に処理）
+    }
+  };
+
   return (
-    <GameStateContext.Provider value={{ state, dispatch }}>
+    <GameStateContext.Provider value={{ state, dispatch, sendMessageWithAPI }}>
       {children}
     </GameStateContext.Provider>
   );

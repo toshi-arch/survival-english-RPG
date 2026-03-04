@@ -277,7 +277,7 @@
   - フォールバック応答
   - _要件: 2.2, 8.4, 8.10_
 
-- [ ] 13.2 GameStateContextのAPI統合
+- [x] 13.2 GameStateContextのAPI統合
   - 静的応答からAPI呼び出しへの切り替え
   - SEND_MESSAGEアクション内でAPIClientを使用
   - _要件: 2.2, 11.2_

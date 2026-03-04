@@ -14,12 +14,16 @@ import { matchResponse } from '@/lib/responseMatching';
 import { processUserMessage } from '@/lib/gameLogic';
 
 export default function ChatUI() {
-  const { state, dispatch } = useGameState();
+  const { state, dispatch, sendMessageWithAPI } = useGameState();
   const { conversationHistory, currentStateId, requiredSlots, movementOptions, scenario } = state;
   const [inputValue, setInputValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const initializedRef = useRef(false);
+
+  // AI統合が有効かどうかをチェック
+  const useAI = process.env.NEXT_PUBLIC_USE_AI === 'true';
 
   // 会話履歴が更新されたら自動スクロール
   useEffect(() => {
@@ -46,41 +50,54 @@ export default function ChatUI() {
   };
 
   // メッセージ送信処理
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || isLoading) return;
 
-    // ユーザーメッセージを追加
-    dispatch({
-      type: 'SEND_MESSAGE',
-      payload: { content: inputValue },
-    });
-
-    // 静的応答を取得
-    const responses = getStaticResponsesForState(currentStateId);
-    const npcResponse = matchResponse(inputValue, responses, false);
-
-    // NPC応答を追加
-    dispatch({
-      type: 'RECEIVE_NPC_RESPONSE',
-      payload: npcResponse,
-    });
-
-    // 移動選択肢を表示すべきかチェック
-    const currentState = scenario.states[currentStateId];
-    const result = processUserMessage(inputValue, currentState, requiredSlots);
-
-    if (result.shouldShowOptions && result.movementOptions) {
-      dispatch({
-        type: 'SHOW_MOVEMENT_OPTIONS',
-        payload: result.movementOptions,
-      });
-    }
-
-    // 入力フィールドをクリア
-    setInputValue('');
+    const messageContent = inputValue;
+    setInputValue(''); // 入力フィールドをすぐにクリア
     inputRef.current?.focus();
+
+    if (useAI) {
+      // Phase 2: API経由でメッセージを送信
+      setIsLoading(true);
+      try {
+        await sendMessageWithAPI(messageContent);
+      } catch (error) {
+        console.error('Failed to send message:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      // Phase 1: 静的応答を使用
+      // ユーザーメッセージを追加
+      dispatch({
+        type: 'SEND_MESSAGE',
+        payload: { content: messageContent },
+      });
+
+      // 静的応答を取得
+      const responses = getStaticResponsesForState(currentStateId);
+      const npcResponse = matchResponse(messageContent, responses, false);
+
+      // NPC応答を追加
+      dispatch({
+        type: 'RECEIVE_NPC_RESPONSE',
+        payload: npcResponse,
+      });
+
+      // 移動選択肢を表示すべきかチェック
+      const currentState = scenario.states[currentStateId];
+      const result = processUserMessage(messageContent, currentState, requiredSlots);
+
+      if (result.shouldShowOptions && result.movementOptions) {
+        dispatch({
+          type: 'SHOW_MOVEMENT_OPTIONS',
+          payload: result.movementOptions,
+        });
+      }
+    }
   };
 
   // 移動選択肢のクリック処理
@@ -171,18 +188,23 @@ export default function ChatUI() {
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Type your message..."
+            placeholder={isLoading ? "Processing..." : "Type your message..."}
             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            disabled={movementOptions !== null && movementOptions.length > 0}
+            disabled={isLoading || (movementOptions !== null && movementOptions.length > 0)}
           />
           <button
             type="submit"
-            disabled={!inputValue.trim() || (movementOptions !== null && movementOptions.length > 0)}
+            disabled={!inputValue.trim() || isLoading || (movementOptions !== null && movementOptions.length > 0)}
             className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
           >
-            Send
+            {isLoading ? 'Sending...' : 'Send'}
           </button>
         </div>
+        {useAI && (
+          <p className="text-xs text-gray-500 mt-2">
+            🤖 AI Mode: Using OpenAI API
+          </p>
+        )}
       </form>
     </div>
   );
