@@ -304,7 +304,7 @@
   - オン/オフトグル機能
   - _要件: 8.10, 8.11, 8.12, 8.13_
 
-- [ ] 14.3 AudioInterfaceコンポーネントの機能実装
+- [x] 14.3 AudioInterfaceコンポーネントの機能実装
   - useSpeechRecognitionとuseTextToSpeechフックの統合
   - マイクボタンの録音機能実装
   - スピーカートグルの音声出力制御実装
