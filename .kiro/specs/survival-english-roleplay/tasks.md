@@ -205,7 +205,7 @@
 
 ### 10. バックエンドデータモデルの実装
 
-- [ ] 10.1 Pydanticモデルの作成
+- [x] 10.1 Pydanticモデルの作成
   - `models/game.py`にMessage, ChatRequest, NPCResponse, MovementOption, ChatResponseモデルを実装
   - `models/openai_models.py`にTTSRequest, STTResponseモデルを実装
   - _要件: 10.2, 10.3_
