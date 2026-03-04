@@ -186,19 +186,19 @@
 
 ### 9. バックエンド開発環境の追加
 
-- [ ] 9.1 バックエンドDocker環境の構築
+- [x] 9.1 バックエンドDocker環境の構築
   - `backend/`ディレクトリを作成
   - バックエンド用の`Dockerfile`を作成
   - `docker-compose.yml`にバックエンドサービスを追加
   - `.devcontainer/devcontainer.json`を更新
   - _要件: 11.1_
 
-- [ ] 9.2 Pythonプロジェクトの初期化
+- [x] 9.2 Pythonプロジェクトの初期化
   - `requirements.txt`を作成（FastAPI, OpenAI SDK, Pydantic, uvicorn）
   - プロジェクト構造を作成（api/, models/, services/, config.py）
   - _要件: 11.1_
 
-- [ ] 9.3 環境変数の設定
+- [x] 9.3 環境変数の設定
   - `.env.example`を作成（OPENAI_API_KEY等）
   - `config.py`に環境変数読み込みロジックを実装
   - _要件: 11.1_
