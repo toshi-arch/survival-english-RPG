@@ -193,7 +193,7 @@
   - `.devcontainer/devcontainer.json`を更新
   - _要件: 11.1_
 
-- [ ] 9.2 Pythonプロジェクトの初期化
+- [x] 9.2 Pythonプロジェクトの初期化
   - `requirements.txt`を作成（FastAPI, OpenAI SDK, Pydantic, uvicorn）
   - プロジェクト構造を作成（api/, models/, services/, config.py）
   - _要件: 11.1_
