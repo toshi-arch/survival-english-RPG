@@ -217,7 +217,7 @@
 
 ### 11. OpenAI API統合の実装
 
-- [ ] 11.1 OpenAIServiceクラスの実装
+- [x] 11.1 OpenAIServiceクラスの実装
   - `services/openai_service.py`を作成
   - generate_npc_response関数（ChatGPT API呼び出し）
   - generate_speech関数（TTS API呼び出し）
