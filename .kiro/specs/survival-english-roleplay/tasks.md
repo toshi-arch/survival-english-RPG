@@ -198,7 +198,7 @@
   - プロジェクト構造を作成（api/, models/, services/, config.py）
   - _要件: 11.1_
 
-- [ ] 9.3 環境変数の設定
+- [x] 9.3 環境変数の設定
   - `.env.example`を作成（OPENAI_API_KEY等）
   - `config.py`に環境変数読み込みロジックを実装
   - _要件: 11.1_
