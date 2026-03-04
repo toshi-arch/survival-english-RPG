@@ -290,7 +290,7 @@
 
 ### 14. 音声機能の実装
 
-- [ ] 14.1 音声認識フックの実装
+- [x] 14.1 音声認識フックの実装
   - `hooks/useSpeechRecognition.ts`を作成
   - MediaRecorder APIを使用した音声録音
   - APIClientを使用した音声認識
