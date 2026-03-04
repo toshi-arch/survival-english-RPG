@@ -290,21 +290,21 @@
 
 ### 14. 音声機能の実装
 
-- [ ] 14.1 音声認識フックの実装
+- [x] 14.1 音声認識フックの実装
   - `hooks/useSpeechRecognition.ts`を作成
   - MediaRecorder APIを使用した音声録音
   - APIClientを使用した音声認識
   - エラーハンドリング（ブラウザ非対応、マイクアクセス拒否）
   - _要件: 8.3, 8.4, 8.5, 8.9_
 
-- [ ] 14.2 音声合成フックの実装
+- [x] 14.2 音声合成フックの実装
   - `hooks/useTextToSpeech.ts`を作成
   - APIClientを使用した音声合成
   - 音声再生の制御
   - オン/オフトグル機能
   - _要件: 8.10, 8.11, 8.12, 8.13_
 
-- [ ] 14.3 AudioInterfaceコンポーネントの機能実装
+- [x] 14.3 AudioInterfaceコンポーネントの機能実装
   - useSpeechRecognitionとuseTextToSpeechフックの統合
   - マイクボタンの録音機能実装
   - スピーカートグルの音声出力制御実装

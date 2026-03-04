@@ -1,30 +1,111 @@
 'use client';
 
 /**
- * AudioInterfaceコンポーネント（Phase 1: UIのみ）
+ * AudioInterfaceコンポーネント（Phase 2: 完全実装）
  * 
  * 音声入力と音声出力の制御インターフェース
- * Phase 1ではUIのみ実装、Phase 2で実際の音声機能を追加
- * 要件: 8.3, 8.5, 8.9, 8.12
+ * useSpeechRecognitionとuseTextToSpeechフックを統合
+ * 要件: 8.3, 8.4, 8.5, 8.9, 8.10, 8.11, 8.12
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGameState } from '@/contexts/GameStateContext';
+import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 
 export default function AudioInterface() {
-  const { state, dispatch } = useGameState();
-  const { audioState } = state;
-  const [showDevMessage, setShowDevMessage] = useState(false);
+  const { state, dispatch, sendMessageWithAPI } = useGameState();
+  const { audioState, conversationHistory } = state;
+  
+  // 音声認識フック
+  const {
+    isRecording,
+    transcript,
+    error: sttError,
+    isSupported: sttSupported,
+    startRecording,
+    stopRecording,
+    clearTranscript,
+  } = useSpeechRecognition();
 
-  // マイクボタンのクリック処理（Phase 1: 開発中メッセージ表示）
-  const handleMicClick = () => {
-    setShowDevMessage(true);
-    setTimeout(() => setShowDevMessage(false), 3000);
+  // 音声合成フック
+  const {
+    speak,
+    stop: stopSpeaking,
+    isSpeaking,
+    isEnabled: ttsEnabled,
+    toggleEnabled: toggleTTS,
+    error: ttsError,
+  } = useTextToSpeech();
+
+  // AI統合が有効かどうかをチェック
+  const useAI = process.env.NEXT_PUBLIC_USE_AI === 'true';
+
+  // トランスクリプトが更新されたらメッセージを送信
+  useEffect(() => {
+    if (transcript && transcript.trim()) {
+      if (useAI) {
+        // AI統合モード
+        sendMessageWithAPI(transcript);
+      } else {
+        // 静的応答モード
+        dispatch({
+          type: 'SEND_MESSAGE',
+          payload: { content: transcript },
+        });
+      }
+      clearTranscript();
+    }
+  }, [transcript, useAI, sendMessageWithAPI, dispatch, clearTranscript]);
+
+  // NPC応答が追加されたら音声出力（音声出力が有効な場合）
+  useEffect(() => {
+    if (ttsEnabled && conversationHistory.length > 0) {
+      const lastMessage = conversationHistory[conversationHistory.length - 1];
+      
+      // 最後のメッセージがNPCからのものであれば音声出力
+      if (lastMessage.role === 'npc' && useAI) {
+        speak(lastMessage.content);
+      }
+    }
+  }, [conversationHistory, ttsEnabled, speak, useAI]);
+
+  // 録音状態をContextに同期
+  useEffect(() => {
+    dispatch({
+      type: 'SET_RECORDING',
+      payload: isRecording,
+    });
+  }, [isRecording, dispatch]);
+
+  // マイクボタンのクリック処理
+  const handleMicClick = async () => {
+    if (!useAI) {
+      // Phase 1モード: 開発中メッセージ
+      alert('🚧 Voice input feature is coming in Phase 2! Set NEXT_PUBLIC_USE_AI=true to enable.');
+      return;
+    }
+
+    if (!sttSupported) {
+      alert('Your browser does not support audio recording. Please use a modern browser like Chrome or Edge.');
+      return;
+    }
+
+    if (isRecording) {
+      stopRecording();
+    } else {
+      await startRecording();
+    }
   };
 
   // スピーカートグルのクリック処理
   const handleSpeakerToggle = () => {
-    dispatch({ type: 'TOGGLE_VOICE_OUTPUT' });
+    toggleTTS();
+    
+    // 音声再生中の場合は停止
+    if (isSpeaking) {
+      stopSpeaking();
+    }
   };
 
   return (
@@ -36,14 +117,25 @@ export default function AudioInterface() {
         <div className="flex flex-col items-center">
           <button
             onClick={handleMicClick}
+            disabled={!useAI || !sttSupported}
             className={`relative p-4 rounded-full transition-all ${
-              audioState.isRecording
+              isRecording
                 ? 'bg-red-500 hover:bg-red-600'
-                : 'bg-indigo-500 hover:bg-indigo-600'
-            } text-white shadow-lg hover:shadow-xl`}
-            title="Voice Input (Coming in Phase 2)"
+                : useAI && sttSupported
+                ? 'bg-indigo-500 hover:bg-indigo-600'
+                : 'bg-gray-300 cursor-not-allowed'
+            } text-white shadow-lg hover:shadow-xl disabled:hover:shadow-lg`}
+            title={
+              !useAI
+                ? 'Enable AI mode to use voice input'
+                : !sttSupported
+                ? 'Your browser does not support audio recording'
+                : isRecording
+                ? 'Stop recording'
+                : 'Start voice input'
+            }
           >
-            {audioState.isRecording ? (
+            {isRecording ? (
               // 録音中アイコン
               <svg
                 className="w-6 h-6"
@@ -70,12 +162,12 @@ export default function AudioInterface() {
             )}
 
             {/* 録音中のパルスエフェクト */}
-            {audioState.isRecording && (
+            {isRecording && (
               <span className="absolute inset-0 rounded-full bg-red-400 animate-ping opacity-75"></span>
             )}
           </button>
           <span className="text-xs text-gray-600 mt-2">
-            {audioState.isRecording ? 'Recording...' : 'Voice Input'}
+            {isRecording ? 'Recording...' : 'Voice Input'}
           </span>
         </div>
 
@@ -83,14 +175,21 @@ export default function AudioInterface() {
         <div className="flex flex-col items-center">
           <button
             onClick={handleSpeakerToggle}
+            disabled={!useAI}
             className={`p-4 rounded-full transition-all ${
-              audioState.voiceOutputEnabled
+              ttsEnabled && useAI
                 ? 'bg-green-500 hover:bg-green-600'
                 : 'bg-gray-400 hover:bg-gray-500'
-            } text-white shadow-lg hover:shadow-xl`}
-            title={audioState.voiceOutputEnabled ? 'Voice Output: ON' : 'Voice Output: OFF'}
+            } text-white shadow-lg hover:shadow-xl disabled:cursor-not-allowed`}
+            title={
+              !useAI
+                ? 'Enable AI mode to use voice output'
+                : ttsEnabled
+                ? 'Voice Output: ON'
+                : 'Voice Output: OFF'
+            }
           >
-            {audioState.voiceOutputEnabled ? (
+            {ttsEnabled ? (
               // スピーカーオンアイコン
               <svg
                 className="w-6 h-6"
@@ -123,23 +222,13 @@ export default function AudioInterface() {
             )}
           </button>
           <span className="text-xs text-gray-600 mt-2">
-            {audioState.voiceOutputEnabled ? 'Audio: ON' : 'Audio: OFF'}
+            {ttsEnabled ? 'Audio: ON' : 'Audio: OFF'}
           </span>
         </div>
       </div>
 
-      {/* 音声処理状態の表示 */}
-      {audioState.isProcessing && (
-        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center gap-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-            <span className="text-sm text-blue-800">Processing audio...</span>
-          </div>
-        </div>
-      )}
-
       {/* 音声再生中の表示 */}
-      {audioState.isSpeaking && (
+      {isSpeaking && (
         <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
           <div className="flex items-center gap-2">
             <div className="flex gap-1">
@@ -152,18 +241,26 @@ export default function AudioInterface() {
         </div>
       )}
 
-      {/* 開発中メッセージ（Phase 1のみ） */}
-      {showDevMessage && (
-        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-sm text-yellow-800 text-center">
-            🚧 Voice input feature is coming in Phase 2!
+      {/* エラー表示 */}
+      {(sttError || ttsError) && (
+        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-800">
+            ⚠️ {sttError || ttsError}
           </p>
         </div>
       )}
 
-      {/* Phase 1の注意書き */}
+      {/* モード表示 */}
       <div className="mt-4 p-2 bg-gray-50 rounded text-xs text-gray-500 text-center">
-        Phase 1: UI only. Full audio features will be available in Phase 2.
+        {useAI ? (
+          <span className="text-green-600 font-medium">
+            🎤 Audio features enabled (AI Mode)
+          </span>
+        ) : (
+          <span>
+            Phase 1: Set NEXT_PUBLIC_USE_AI=true to enable audio features
+          </span>
+        )}
       </div>
     </div>
   );
