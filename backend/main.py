@@ -6,7 +6,8 @@ FastAPIメインアプリケーション
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from config import settings
+from backend.config import settings
+from backend.api import chat, tts, stt
 
 # FastAPIアプリケーションの作成
 app = FastAPI(
@@ -44,8 +45,7 @@ async def health_check():
     }
 
 
-# TODO: Phase 2でAPIルーターを追加
-# from api import chat, tts, stt
-# app.include_router(chat.router, prefix="/api", tags=["chat"])
-# app.include_router(tts.router, prefix="/api", tags=["tts"])
-# app.include_router(stt.router, prefix="/api", tags=["stt"])
+# APIルーターの登録
+app.include_router(chat.router, prefix="/api", tags=["chat"])
+app.include_router(tts.router, prefix="/api", tags=["tts"])
+app.include_router(stt.router, prefix="/api", tags=["stt"])
