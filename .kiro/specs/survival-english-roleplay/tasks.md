@@ -217,14 +217,14 @@
 
 ### 11. OpenAI API統合の実装
 
-- [ ] 11.1 OpenAIServiceクラスの実装
+- [x] 11.1 OpenAIServiceクラスの実装
   - `services/openai_service.py`を作成
   - generate_npc_response関数（ChatGPT API呼び出し）
   - generate_speech関数（TTS API呼び出し）
   - transcribe_audio関数（Whisper API呼び出し）
   - _要件: 8.4, 8.10, 8.13_
 
-- [ ] 11.2 ゲームロジックサービスの実装
+- [x] 11.2 ゲームロジックサービスの実装
   - `services/game_logic.py`を作成
   - build_npc_prompt関数（プロンプト構築）
   - parse_ai_response関数（AI応答のパース）
