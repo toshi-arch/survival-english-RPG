@@ -107,6 +107,13 @@ function gameStateReducer(state: GameState, action: GameAction): GameState {
     // NPC応答受信
     case 'RECEIVE_NPC_RESPONSE': {
       const response = action.payload;
+      
+      // npcMessageが空の場合はメッセージを追加しない
+      if (!response.npcMessage || !response.npcMessage.trim()) {
+        console.warn('Received empty NPC message, skipping');
+        return state;
+      }
+      
       const npcMessage: Message = {
         id: `msg-${Date.now()}-npc`,
         role: 'npc',
@@ -291,6 +298,9 @@ export function GameStateProvider({ children, scenario = statueLibertyScenario }
    */
   const sendMessageWithAPI = async (userMessage: string) => {
     try {
+      // 現在の会話履歴を取得（ユーザーメッセージ追加前）
+      const currentHistory = state.conversationHistory;
+      
       // ユーザーメッセージを追加
       dispatch({
         type: 'SEND_MESSAGE',
@@ -298,15 +308,16 @@ export function GameStateProvider({ children, scenario = statueLibertyScenario }
       });
 
       // APIクライアントを使用してNPC応答を取得
+      // 注意: dispatchは非同期ではないので、currentHistoryを使用
       const npcResponse = await apiClient.sendMessage({
         sessionId: `session-${Date.now()}`, // TODO: 実際のセッションID管理
         stateId: state.currentStateId,
         userMessage,
-        conversationHistory: state.conversationHistory,
+        conversationHistory: currentHistory, // 古い履歴を使用
         currentSlots: state.requiredSlots,
       });
 
-      // NPC応答を追加
+      // NPC応答を追加（フォールバック応答でも追加）
       dispatch({
         type: 'RECEIVE_NPC_RESPONSE',
         payload: npcResponse,
@@ -314,7 +325,17 @@ export function GameStateProvider({ children, scenario = statueLibertyScenario }
 
     } catch (error) {
       console.error('Failed to send message via API:', error);
-      // エラー時はフォールバック応答を使用（APIClientが自動的に処理）
+      
+      // エラー時はエラーメッセージをNPC応答として追加
+      dispatch({
+        type: 'RECEIVE_NPC_RESPONSE',
+        payload: {
+          npcMessage: "I'm sorry, I'm having trouble connecting right now. Please try again.",
+          slotUpdates: {},
+          movementOptions: undefined,
+          shouldTransition: false,
+        },
+      });
     }
   };
 

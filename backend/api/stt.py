@@ -48,7 +48,15 @@ async def speech_to_text(audio: UploadFile = File(...)):
         
         # ファイルをタプル形式で渡す（ファイル名を含める）
         # OpenAI APIはファイル名から形式を判断する
-        file_tuple = (audio.filename or "audio.mp3", audio.file, audio.content_type or "audio/mpeg")
+        # webmファイルの場合は明示的にファイル名を設定
+        filename = audio.filename or "audio.webm"
+        content_type = audio.content_type or "audio/webm"
+        
+        # ファイル名に拡張子がない場合は追加
+        if not any(filename.lower().endswith(ext) for ext in allowed_extensions):
+            filename = "audio.webm"
+        
+        file_tuple = (filename, audio.file, content_type)
         
         # OpenAI Whisper APIを呼び出し
         transcript = await openai_service.transcribe_audio(file_tuple)

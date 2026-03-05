@@ -4,8 +4,10 @@ FastAPIメインアプリケーション
 要件: 11.1
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from config import settings
 from api import chat, tts, stt
 
@@ -25,6 +27,25 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# バリデーションエラーハンドラー
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """
+    Pydanticバリデーションエラーの詳細をログに出力
+    """
+    print(f"Validation error for {request.method} {request.url}")
+    print(f"Error details: {exc.errors()}")
+    print(f"Request body: {await request.body()}")
+    
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={
+            "detail": exc.errors(),
+            "body": str(await request.body()),
+        },
+    )
 
 
 @app.get("/")
