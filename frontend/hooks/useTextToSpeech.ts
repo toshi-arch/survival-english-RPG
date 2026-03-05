@@ -83,12 +83,15 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
       // 再生終了時のハンドラ
       audio.onended = () => {
         setIsSpeaking(false);
+        audioRef.current = null;
         
-        // URLをクリーンアップ
-        if (audioUrlRef.current) {
-          URL.revokeObjectURL(audioUrlRef.current);
-          audioUrlRef.current = null;
-        }
+        // 少し遅延してからURLをクリーンアップ（再生完了を確実にする）
+        setTimeout(() => {
+          if (audioUrlRef.current === audioUrl) {
+            URL.revokeObjectURL(audioUrl);
+            audioUrlRef.current = null;
+          }
+        }, 100);
       };
 
       // エラーハンドラ
@@ -96,16 +99,27 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
         console.error('Audio playback error:', event);
         setError('Failed to play audio');
         setIsSpeaking(false);
+        audioRef.current = null;
         
-        // URLをクリーンアップ
-        if (audioUrlRef.current) {
-          URL.revokeObjectURL(audioUrlRef.current);
+        // エラー時はすぐにクリーンアップ
+        if (audioUrlRef.current === audioUrl) {
+          URL.revokeObjectURL(audioUrl);
           audioUrlRef.current = null;
         }
       };
 
-      // 音声を再生
-      await audio.play();
+      // 音声を再生（try-catchで囲んでautoplay制限をハンドル）
+      try {
+        await audio.play();
+      } catch (playError) {
+        // Autoplay制限の場合は特別なエラーメッセージ
+        if (playError instanceof Error && playError.name === 'NotAllowedError') {
+          console.warn('Autoplay blocked by browser. User interaction required.');
+          setError('Click to enable audio playback');
+        } else {
+          throw playError;
+        }
+      }
 
     } catch (err) {
       console.error('Text-to-speech error:', err);

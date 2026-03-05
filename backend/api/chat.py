@@ -5,9 +5,9 @@
 """
 
 from fastapi import APIRouter, HTTPException
-from backend.models.game import ChatRequest, ChatResponse, NPCResponse
-from backend.services.openai_service import OpenAIService
-from backend.services.game_logic import GameLogic
+from models.game import ChatRequest, ChatResponse, NPCResponse
+from services.openai_service import OpenAIService
+from services.game_logic import GameLogic
 
 router = APIRouter()
 
@@ -30,6 +30,12 @@ async def process_chat(request: ChatRequest):
         ChatResponse: NPC応答またはエラー情報
     """
     try:
+        # デバッグ用ログ
+        print(f"Received chat request: session_id={request.session_id}, state_id={request.state_id}")
+        print(f"User message: {request.user_message}")
+        print(f"Current slots: {request.current_slots}")
+        print(f"Conversation history length: {len(request.conversation_history)}")
+        
         # ゲームロジックでプロンプトを構築
         prompt = game_logic.build_npc_prompt(
             state_id=request.state_id,
@@ -50,6 +56,7 @@ async def process_chat(request: ChatRequest):
     
     except ValueError as e:
         # パースエラーまたはバリデーションエラー
+        print(f"ValueError in chat endpoint: {str(e)}")
         return ChatResponse(
             success=False,
             error=f"Response parsing error: {str(e)}"
@@ -57,6 +64,9 @@ async def process_chat(request: ChatRequest):
     
     except Exception as e:
         # その他のエラー
+        print(f"Exception in chat endpoint: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return ChatResponse(
             success=False,
             error=f"Chat processing error: {str(e)}"

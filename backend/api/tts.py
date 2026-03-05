@@ -6,8 +6,8 @@ Text-to-Speech APIエンドポイント
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
-from backend.models.openai_models import TTSRequest
-from backend.services.openai_service import OpenAIService
+from models.openai_models import TTSRequest
+from services.openai_service import OpenAIService
 
 router = APIRouter()
 
