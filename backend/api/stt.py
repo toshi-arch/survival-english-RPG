@@ -5,8 +5,8 @@ Speech-to-Text APIエンドポイント
 """
 
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from backend.models.openai_models import STTResponse
-from backend.services.openai_service import OpenAIService
+from models.openai_models import STTResponse
+from services.openai_service import OpenAIService
 
 router = APIRouter()
 

@@ -7,7 +7,7 @@
 
 import json
 from typing import Dict, List, Optional
-from backend.models.game import Message, NPCResponse
+from models.game import Message, NPCResponse
 
 
 # State定義（フロントエンドのデータと同期）

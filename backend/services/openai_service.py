@@ -7,7 +7,7 @@ ChatGPT、TTS、Whisper APIとの統合を提供
 
 from openai import AsyncOpenAI
 from typing import BinaryIO
-from backend.config import settings
+from config import settings
 
 
 class OpenAIService:

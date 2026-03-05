@@ -6,8 +6,8 @@ FastAPIメインアプリケーション
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.config import settings
-from backend.api import chat, tts, stt
+from config import settings
+from api import chat, tts, stt
 
 # FastAPIアプリケーションの作成
 app = FastAPI(

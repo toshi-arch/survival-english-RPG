@@ -5,9 +5,9 @@
 """
 
 from fastapi import APIRouter, HTTPException
-from backend.models.game import ChatRequest, ChatResponse, NPCResponse
-from backend.services.openai_service import OpenAIService
-from backend.services.game_logic import GameLogic
+from models.game import ChatRequest, ChatResponse, NPCResponse
+from services.openai_service import OpenAIService
+from services.game_logic import GameLogic
 
 router = APIRouter()
 
