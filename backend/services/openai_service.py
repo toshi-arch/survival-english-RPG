@@ -89,12 +89,12 @@ class OpenAIService:
         except Exception as e:
             raise Exception(f"OpenAI TTS API error: {str(e)}")
     
-    async def transcribe_audio(self, audio_file: BinaryIO) -> str:
+    async def transcribe_audio(self, audio_file) -> str:
         """
         OpenAI Whisper APIを使用して音声をテキストに変換
         
         Args:
-            audio_file: 音声ファイルのバイナリストリーム
+            audio_file: 音声ファイル（タプル形式: (filename, file, content_type)）
             
         Returns:
             認識されたテキスト
