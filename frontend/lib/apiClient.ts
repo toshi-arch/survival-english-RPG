@@ -92,11 +92,25 @@ export class APIClient {
         }
 
         // バックエンドのsnake_caseをcamelCaseに変換
+        const rawData = data.data as any;
+        
+        // movement_optionsの変換
+        let movementOptions = undefined;
+        if (rawData.movement_options || rawData.movementOptions) {
+          const options = rawData.movement_options || rawData.movementOptions;
+          movementOptions = options.map((opt: any) => ({
+            id: opt.id,
+            label: opt.label,
+            targetStateId: opt.target_state_id || opt.targetStateId,
+            isCorrect: opt.is_correct ?? opt.isCorrect ?? false,
+          }));
+        }
+        
         const npcResponse: NPCResponse = {
-          npcMessage: (data.data as any).npc_message || data.data.npcMessage,
-          slotUpdates: (data.data as any).slot_updates || data.data.slotUpdates || {},
-          movementOptions: (data.data as any).movement_options || data.data.movementOptions,
-          shouldTransition: (data.data as any).should_transition ?? data.data.shouldTransition ?? false,
+          npcMessage: rawData.npc_message || rawData.npcMessage,
+          slotUpdates: rawData.slot_updates || rawData.slotUpdates || {},
+          movementOptions,
+          shouldTransition: rawData.should_transition ?? rawData.shouldTransition ?? false,
         };
 
         return npcResponse;
