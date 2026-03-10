@@ -101,17 +101,24 @@ export default function InformationNote() {
 
               {/* スロット情報 */}
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-gray-800 text-sm">
-                  {slot.label}
-                </div>
                 {slot.isFilled ? (
-                  <div className="text-green-700 text-sm mt-1 font-semibold">
-                    {slot.value}
-                  </div>
+                  <>
+                    <div className="font-medium text-gray-800 text-sm">
+                      {slot.label}
+                    </div>
+                    <div className="text-green-700 text-sm mt-1 font-semibold">
+                      {slot.value}
+                    </div>
+                  </>
                 ) : (
-                  <div className="text-gray-400 text-xs mt-1 italic">
-                    Not yet collected
-                  </div>
+                  <>
+                    <div className="font-medium text-gray-400 text-sm">
+                      ???
+                    </div>
+                    <div className="text-gray-400 text-xs mt-1 italic">
+                      Discover through conversation
+                    </div>
+                  </>
                 )}
               </div>
             </div>
