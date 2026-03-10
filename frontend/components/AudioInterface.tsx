@@ -38,8 +38,12 @@ export default function AudioInterface() {
     error: ttsError,
   } = useTextToSpeech();
 
-  // AI統合が有効かどうかをチェック
-  const useAI = process.env.NEXT_PUBLIC_USE_AI === 'true';
+  // AI統合が有効かどうかをチェック（クライアントサイドのみ）
+  const [useAI, setUseAI] = useState(false);
+  
+  useEffect(() => {
+    setUseAI(process.env.NEXT_PUBLIC_USE_AI === 'true');
+  }, []);
 
   // トランスクリプトが更新されたらメッセージを送信
   useEffect(() => {
@@ -59,13 +63,23 @@ export default function AudioInterface() {
   }, [transcript, useAI, sendMessageWithAPI, dispatch, clearTranscript]);
 
   // NPC応答が追加されたら音声出力（音声出力が有効な場合）
+  // 最後に再生したメッセージIDを追跡して重複再生を防ぐ
+  const lastPlayedMessageIdRef = React.useRef<string | null>(null);
+  const hasUserInteractedRef = React.useRef(false);
+  
   useEffect(() => {
-    if (ttsEnabled && conversationHistory.length > 0) {
+    if (ttsEnabled && conversationHistory.length > 0 && useAI && hasUserInteractedRef.current) {
       const lastMessage = conversationHistory[conversationHistory.length - 1];
       
-      // 最後のメッセージがNPCからのものであれば音声出力
-      if (lastMessage.role === 'npc' && useAI) {
-        speak(lastMessage.content);
+      // 最後のメッセージがNPCからのもので、まだ再生していない場合のみ音声出力
+      if (lastMessage.role === 'npc' && lastMessage.id !== lastPlayedMessageIdRef.current) {
+        lastPlayedMessageIdRef.current = lastMessage.id;
+        
+        // ユーザーインタラクション後のみ再生（autoplay制限を回避）
+        speak(lastMessage.content).catch(err => {
+          console.error('Failed to play TTS:', err);
+          // Autoplay制限エラーの場合は静かに失敗
+        });
       }
     }
   }, [conversationHistory, ttsEnabled, speak, useAI]);
@@ -80,6 +94,9 @@ export default function AudioInterface() {
 
   // マイクボタンのクリック処理
   const handleMicClick = async () => {
+    // ユーザーインタラクションがあったことを記録
+    hasUserInteractedRef.current = true;
+    
     if (!useAI) {
       // Phase 1モード: 開発中メッセージ
       alert('🚧 Voice input feature is coming in Phase 2! Set NEXT_PUBLIC_USE_AI=true to enable.');
@@ -100,6 +117,9 @@ export default function AudioInterface() {
 
   // スピーカートグルのクリック処理
   const handleSpeakerToggle = () => {
+    // ユーザーインタラクションがあったことを記録
+    hasUserInteractedRef.current = true;
+    
     toggleTTS();
     
     // 音声再生中の場合は停止

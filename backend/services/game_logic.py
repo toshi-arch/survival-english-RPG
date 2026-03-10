@@ -7,7 +7,7 @@
 
 import json
 from typing import Dict, List, Optional
-from backend.models.game import Message, NPCResponse
+from models.game import Message, NPCResponse
 
 
 # State定義（フロントエンドのデータと同期）
@@ -93,15 +93,25 @@ Guidelines:
 - Do not correct grammar during roleplay
 - When all required information is collected, offer movement options
 
+Valid state IDs for target_state_id:
+- airport-lobby
+- city-transit
+- battery-park-area
+- ferry-terminal
+- statue-of-liberty
+- wrong-place
+
 Respond in JSON format:
 {{
   "npc_message": "your response here",
   "slot_updates": {{"slot_name": "value"}},
   "movement_options": [
-    {{"id": "option1", "label": "Option 1", "target_state_id": "state-id", "is_correct": true}}
+    {{"id": "option1", "label": "Go to Battery Park", "target_state_id": "battery-park-area", "is_correct": true}}
   ],
   "should_transition": false
 }}
+
+IMPORTANT: Use exact state IDs from the list above. Do NOT add prefixes like "state-" to the state IDs.
 
 Conversation history:
 {history_info}

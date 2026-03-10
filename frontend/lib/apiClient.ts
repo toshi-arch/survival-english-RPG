@@ -9,6 +9,12 @@ import { ChatRequest, ChatResponse, NPCResponse, Message } from '@/types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
+// デバッグ用ログ
+if (typeof window !== 'undefined') {
+  console.log('API_BASE_URL:', API_BASE_URL);
+  console.log('process.env.NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL);
+}
+
 /**
  * APIクライアントクラス
  * 
@@ -24,6 +30,11 @@ export class APIClient {
     this.baseUrl = baseUrl;
     this.timeout = timeout;
     this.maxRetries = maxRetries;
+    
+    // デバッグ用ログ
+    if (typeof window !== 'undefined') {
+      console.log('APIClient initialized with baseUrl:', this.baseUrl);
+    }
   }
 
   /**
@@ -41,29 +52,36 @@ export class APIClient {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
+        const requestBody = {
+          session_id: request.sessionId,
+          state_id: request.stateId,
+          user_message: request.userMessage,
+          conversation_history: request.conversationHistory.map(msg => ({
+            id: msg.id,
+            role: msg.role,
+            content: msg.content,
+            timestamp: msg.timestamp.toISOString(),
+          })),
+          current_slots: request.currentSlots,
+        };
+        
+        // デバッグ用ログ
+        console.log('Sending chat request:', JSON.stringify(requestBody, null, 2));
+
         const response = await fetch(`${this.baseUrl}/api/chat`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            session_id: request.sessionId,
-            state_id: request.stateId,
-            user_message: request.userMessage,
-            conversation_history: request.conversationHistory.map(msg => ({
-              id: msg.id,
-              role: msg.role,
-              content: msg.content,
-              timestamp: msg.timestamp.toISOString(),
-            })),
-            current_slots: request.currentSlots,
-          }),
+          body: JSON.stringify(requestBody),
           signal: controller.signal,
         });
 
         clearTimeout(timeoutId);
 
         if (!response.ok) {
+          const errorText = await response.text();
+          console.error('API error response:', errorText);
           throw new Error(`API error: ${response.status} ${response.statusText}`);
         }
 
@@ -73,7 +91,29 @@ export class APIClient {
           throw new Error(data.error || 'Unknown API error');
         }
 
-        return data.data;
+        // バックエンドのsnake_caseをcamelCaseに変換
+        const rawData = data.data as any;
+        
+        // movement_optionsの変換
+        let movementOptions = undefined;
+        if (rawData.movement_options || rawData.movementOptions) {
+          const options = rawData.movement_options || rawData.movementOptions;
+          movementOptions = options.map((opt: any) => ({
+            id: opt.id,
+            label: opt.label,
+            targetStateId: opt.target_state_id || opt.targetStateId,
+            isCorrect: opt.is_correct ?? opt.isCorrect ?? false,
+          }));
+        }
+        
+        const npcResponse: NPCResponse = {
+          npcMessage: rawData.npc_message || rawData.npcMessage,
+          slotUpdates: rawData.slot_updates || rawData.slotUpdates || {},
+          movementOptions,
+          shouldTransition: rawData.should_transition ?? rawData.shouldTransition ?? false,
+        };
+
+        return npcResponse;
 
       } catch (error) {
         lastError = error as Error;
