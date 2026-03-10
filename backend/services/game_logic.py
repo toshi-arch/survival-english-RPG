@@ -15,32 +15,38 @@ STATE_DEFINITIONS = {
     'airport-lobby': {
         'name': 'Airport Lobby',
         'npc_role': '空港インフォメーションスタッフ',
-        'required_slots': ['destination', 'transport']
+        'required_slots': ['destination', 'transport'],
+        'correct_path': 'User should take subway to reach Battery Park. Direct taxi/bus to Statue of Liberty is wrong.'
     },
     'city-transit': {
         'name': 'City Transit',
         'npc_role': '地下鉄の乗客',
-        'required_slots': ['landmark', 'ferry_location']
+        'required_slots': ['landmark', 'next_transport'],
+        'correct_path': 'User should get off at Bowling Green station and walk to Battery Park.'
     },
     'battery-park-area': {
         'name': 'Battery Park Area',
         'npc_role': 'バッテリーパークの案内人',
-        'required_slots': ['ferry_terminal']
+        'required_slots': ['ferry_location', 'ticket_info'],
+        'correct_path': 'User should find the ferry terminal to take ferry to Statue of Liberty.'
     },
     'ferry-terminal': {
         'name': 'Ferry Terminal',
         'npc_role': 'フェリーチケット販売員',
-        'required_slots': ['ticket', 'boarding']
+        'required_slots': ['ticket_type', 'departure_time'],
+        'correct_path': 'User should buy ticket and board the ferry.'
     },
     'statue-of-liberty': {
         'name': 'Statue of Liberty',
         'npc_role': '観光ガイド',
-        'required_slots': []
+        'required_slots': [],
+        'correct_path': 'Goal reached!'
     },
     'wrong-place': {
         'name': 'Wrong Place',
         'npc_role': '困惑した地元の人',
-        'required_slots': []
+        'required_slots': [],
+        'correct_path': 'User made a wrong choice and needs to restart.'
     }
 }
 
@@ -86,32 +92,45 @@ Current information collected:
 Required information to proceed:
 {', '.join(state['required_slots']) if state['required_slots'] else 'None (goal reached)'}
 
+Correct path guidance:
+{state.get('correct_path', 'No specific path guidance')}
+
 Guidelines:
 - Be friendly and patient
 - Accept broken English and single words
 - Help the user discover the required information naturally
+- Guide them towards the CORRECT path
 - Do not correct grammar during roleplay
 - When all required information is collected, offer movement options
 
-Valid state IDs for target_state_id:
-- airport-lobby
-- city-transit
-- battery-park-area
-- ferry-terminal
-- statue-of-liberty
-- wrong-place
+Valid state IDs and correct transitions:
+- From airport-lobby → city-transit (subway/train) OR wrong-place (taxi/bus)
+- From city-transit → battery-park-area (get off at Battery Park) OR wrong-place (wrong station)
+- From battery-park-area → ferry-terminal (find ferry terminal) OR wrong-place (wrong location)
+- From ferry-terminal → statue-of-liberty (board ferry) OR wrong-place (wrong ferry)
+
+Example movement options by state:
+- airport-lobby: [{{"id": "subway", "label": "Take subway to city", "target_state_id": "city-transit", "is_correct": true}}, {{"id": "taxi", "label": "Take taxi directly", "target_state_id": "wrong-place", "is_correct": false}}]
+- city-transit: [{{"id": "battery-park", "label": "Get off at Battery Park", "target_state_id": "battery-park-area", "is_correct": true}}, {{"id": "wrong-station", "label": "Get off at different station", "target_state_id": "wrong-place", "is_correct": false}}]
+- battery-park-area: [{{"id": "ferry-terminal", "label": "Go to ferry terminal", "target_state_id": "ferry-terminal", "is_correct": true}}, {{"id": "wrong-location", "label": "Go somewhere else", "target_state_id": "wrong-place", "is_correct": false}}]
+- ferry-terminal: [{{"id": "board-ferry", "label": "Board ferry to Statue of Liberty", "target_state_id": "statue-of-liberty", "is_correct": true}}, {{"id": "wrong-ferry", "label": "Board different ferry", "target_state_id": "wrong-place", "is_correct": false}}]
 
 Respond in JSON format:
 {{
   "npc_message": "your response here",
   "slot_updates": {{"slot_name": "value"}},
   "movement_options": [
-    {{"id": "option1", "label": "Go to Battery Park", "target_state_id": "battery-park-area", "is_correct": true}}
+    {{"id": "option1", "label": "Correct choice", "target_state_id": "next-state", "is_correct": true}},
+    {{"id": "option2", "label": "Wrong choice", "target_state_id": "wrong-place", "is_correct": false}}
   ],
   "should_transition": false
 }}
 
-IMPORTANT: Use exact state IDs from the list above. Do NOT add prefixes like "state-" to the state IDs.
+IMPORTANT: 
+- Use exact state IDs from the list above. Do NOT add prefixes like "state-".
+- Generate movement options that match the CURRENT state (not previous state).
+- From city-transit, the next state should be "battery-park-area", NOT "city-transit" again.
+- Only offer movement options when user has collected ALL required information for current state.
 
 Conversation history:
 {history_info}
