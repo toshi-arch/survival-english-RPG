@@ -35,11 +35,13 @@ export default function GamePage() {
             </aside>
 
             {/* 右パネル: チャットと音声インターフェース */}
-            <main className="flex flex-col" style={{ minHeight: '600px' }}>
-              <div className="flex-1">
+            <main className="flex flex-col space-y-4" style={{ height: '700px' }}>
+              <div className="flex-1 min-h-0">
                 <ChatUI />
               </div>
-              <AudioInterface />
+              <div className="flex-shrink-0">
+                <AudioInterface />
+              </div>
             </main>
           </div>
         </div>

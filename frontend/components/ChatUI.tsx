@@ -130,9 +130,9 @@ export default function ChatUI() {
   };
 
   return (
-    <div className="chat-ui flex flex-col h-full bg-white rounded-lg shadow-md">
+    <div className="chat-ui flex flex-col h-full bg-white rounded-lg shadow-md overflow-hidden">
       {/* ヘッダー */}
-      <div className="chat-header bg-indigo-600 text-white p-4 rounded-t-lg">
+      <div className="chat-header bg-indigo-600 text-white p-4 flex-shrink-0">
         <h2 className="text-xl font-bold">Chat with NPC</h2>
         <p className="text-sm text-indigo-100">
           {scenario.states[currentStateId]?.npcRole || 'NPC'}
@@ -140,7 +140,7 @@ export default function ChatUI() {
       </div>
 
       {/* メッセージリスト */}
-      <div className="chat-messages flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="chat-messages flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
         {conversationHistory.map((message) => (
           <div
             key={message.id}
@@ -181,7 +181,7 @@ export default function ChatUI() {
       </div>
 
       {/* 入力フォーム */}
-      <form onSubmit={handleSendMessage} className="chat-input p-4 border-t border-gray-200">
+      <form onSubmit={handleSendMessage} className="chat-input p-4 border-t border-gray-200 flex-shrink-0">
         <div className="flex gap-2">
           <input
             ref={inputRef}
