@@ -109,7 +109,8 @@ Guidelines:
 - When user mentions information related to required slots, update slot_updates in your response
 - Guide them towards the CORRECT path
 - Do not correct grammar during roleplay
-- When all required information is collected, offer movement options
+- CRITICAL: Only offer movement_options when ALL required slots are filled (no null values)
+- Check that every required slot has a value before offering movement options
 - IMPORTANT: Update slot_updates field when user provides relevant information
 
 Valid state IDs and correct transitions:
@@ -145,7 +146,9 @@ CRITICAL VALIDATION BEFORE RESPONDING:
 - Verify target_state_id in movement_options is NOT equal to current state_id ({state_id})
 - Verify the correct option's target_state_id matches the next state in the sequence
 - For city-transit, correct target MUST be "battery-park-area" (NOT "city-transit")
-- Only offer movement options when user has collected ALL required information for current state
+- CRITICAL: Only offer movement_options when ALL required slots have values (check Current information collected section above)
+- If any required slot is "not yet collected", do NOT include movement_options in your response
+- Only include movement_options field when every required slot has been filled
 
 Conversation history:
 {history_info}
@@ -230,3 +233,36 @@ Conversation history:
             raise ValueError(f"Invalid JSON response: {str(e)}")
         except Exception as e:
             raise ValueError(f"Failed to parse AI response: {str(e)}")
+    
+    def validate_slots_complete(
+        self,
+        state_id: str,
+        slots: Dict[str, Optional[str]]
+    ) -> bool:
+        """
+        スロットが全て埋まっているかチェック
+        
+        Args:
+            state_id: 現在のState ID
+            slots: 現在のスロット値
+            
+        Returns:
+            全てのスロットが埋まっている場合True
+        """
+        state = STATE_DEFINITIONS.get(state_id)
+        if not state:
+            return False
+        
+        required_slots = state.get('required_slots', [])
+        
+        # 必須スロットがない場合（ゴールStateなど）
+        if not required_slots:
+            return True
+        
+        # 全ての必須スロットが埋まっているかチェック
+        for slot in required_slots:
+            value = slots.get(slot)
+            if value is None or value == "":
+                return False
+        
+        return True
