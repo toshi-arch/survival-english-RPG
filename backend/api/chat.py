@@ -52,6 +52,15 @@ async def process_chat(request: ChatRequest):
         # 応答をパースして検証
         npc_response = game_logic.parse_ai_response(ai_response)
         
+        # Movement optionsの検証（デバッグ用）
+        if npc_response.movement_options:
+            for option in npc_response.movement_options:
+                if option.target_state_id == request.state_id:
+                    print(f"WARNING: Movement option loops back to current state!")
+                    print(f"  Current state: {request.state_id}")
+                    print(f"  Option: {option.label} -> {option.target_state_id}")
+                    print(f"  This should not happen. AI generated incorrect movement options.")
+        
         return ChatResponse(success=True, data=npc_response)
     
     except ValueError as e:
