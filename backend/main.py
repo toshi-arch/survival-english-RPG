@@ -35,15 +35,16 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     """
     Pydanticバリデーションエラーの詳細をログに出力
     """
+    body = await request.body()
     print(f"Validation error for {request.method} {request.url}")
     print(f"Error details: {exc.errors()}")
-    print(f"Request body: {await request.body()}")
+    print(f"Request body: {body}")
     
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
             "detail": exc.errors(),
-            "body": str(await request.body()),
+            "body": body.decode('utf-8') if body else "",
         },
     )
 
