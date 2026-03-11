@@ -52,6 +52,26 @@ async def process_chat(request: ChatRequest):
         # 応答をパースして検証
         npc_response = game_logic.parse_ai_response(ai_response)
         
+        # スロット完全性チェック: 全てのスロットが埋まっていない場合は移動選択肢を削除
+        if npc_response.movement_options:
+            # スロット更新を適用した後の状態をシミュレート
+            updated_slots = {**request.current_slots}
+            if npc_response.slot_updates:
+                updated_slots.update(npc_response.slot_updates)
+            
+            # スロットが全て埋まっているかチェック
+            slots_complete = game_logic.validate_slots_complete(
+                state_id=request.state_id,
+                slots=updated_slots
+            )
+            
+            if not slots_complete:
+                print(f"WARNING: AI offered movement options but slots are not complete!")
+                print(f"  Current state: {request.state_id}")
+                print(f"  Slots after update: {updated_slots}")
+                print(f"  Removing movement options from response")
+                npc_response.movement_options = None
+        
         # Movement optionsの検証（デバッグ用）
         if npc_response.movement_options:
             for option in npc_response.movement_options:
