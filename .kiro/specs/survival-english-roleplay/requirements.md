@@ -57,11 +57,12 @@
 
 #### 受け入れ基準
 
-1. WHEN Userが情報を収集した、THE Game_System SHALL Movement_Optionを提示する
-2. THE Game_System SHALL 正しいMovement_Optionと誤ったMovement_Optionの両方を含める
-3. WHEN UserがMovement_Optionを選択する、THE AI_NPC SHALL 最終確認を行う
-4. WHEN すべてのRequired_Slotが正しく埋められている、THE Game_System SHALL 次のStateへの遷移を許可する
-5. WHEN Required_Slotが不完全または誤っている、THE Game_System SHALL エラーStateに遷移するかPenalty_Systemを適用する
+1. WHEN Userがすべての必須情報を収集した、THE Game_System SHALL Movement_Optionを提示する
+2. THE Game_System SHALL すべてのRequired_Slotが埋まるまでMovement_Optionを表示しない
+3. THE Game_System SHALL 正しいMovement_Optionと誤ったMovement_Optionの両方を含める
+4. WHEN UserがMovement_Optionを選択する、THE AI_NPC SHALL 最終確認を行う
+5. WHEN すべてのRequired_Slotが正しく埋められている、THE Game_System SHALL 次のStateへの遷移を許可する
+6. WHEN Required_Slotが不完全または誤っている、THE Game_System SHALL エラーStateに遷移するかPenalty_Systemを適用する
 
 ### 要件4: 初心者に優しいAI NPCの振る舞い
 
@@ -130,6 +131,8 @@
 11. WHEN UserがVoice_Modeを使用している、THE Voice_Output SHALL AI_NPCの応答を自動的に音声で再生する
 12. THE Audio_Interface SHALL Voice_Outputのオン/オフを切り替える機能を提供する
 13. WHEN Voice_Outputがオンである、THE Text-to-Speech SHALL AI_NPCの応答テキストを音声に変換して再生する
+14. THE Chat_UI SHALL 固定高さのコンテナ内でメッセージ履歴をスクロール可能にする
+15. THE Chat_UI SHALL 会話が長くなってもMap_UIとInformation_Noteが常に見える位置に固定する
 
 ### 要件9: 自由の女神シナリオの実装
 

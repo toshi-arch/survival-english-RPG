@@ -399,12 +399,21 @@ interface Message {
 - メッセージの送信
 - NPCメッセージの表示
 - 移動選択肢の表示（ボタン形式）
+- 固定高さコンテナ内でのスクロール制御
 
 **UI要素**:
-- メッセージリスト（スクロール可能）
-- テキスト入力フィールド
+- 固定ヘッダー（NPC役割表示）
+- メッセージリスト（スクロール可能、固定高さ内）
+- テキスト入力フィールド（固定フッター）
 - 送信ボタン
 - 移動選択肢ボタン群
+
+**レイアウト設計**:
+- Chat UIは固定高さ（700px）のコンテナ
+- ヘッダーと入力フォームは固定位置
+- メッセージリストのみがスクロール可能
+- 会話が長くなってもMap UIとInformation Noteが常に見える位置に固定
+- Flexboxを使用した3層構造（ヘッダー / メッセージリスト / 入力フォーム）
 
 ---
 
@@ -1062,9 +1071,12 @@ Required information to proceed:
 Guidelines:
 - Be friendly and patient
 - Accept broken English and single words
-- Help the user discover the required information naturally
+- Help the user discover the required information naturally through conversation
+- When user mentions information related to required slots, update slot_updates in your response
 - Do not correct grammar during roleplay
-- When all required information is collected, offer movement options
+- CRITICAL: Only offer movement_options when ALL required slots are filled (no null values)
+- Check that every required slot has a value before offering movement options
+- Guide them towards the CORRECT path
 
 Respond in JSON format:
 {{
@@ -1076,10 +1088,36 @@ Respond in JSON format:
   "should_transition": false
 }}
 
+CRITICAL VALIDATION BEFORE RESPONDING:
+- Only offer movement_options when ALL required slots have values
+- If any required slot is "not yet collected", do NOT include movement_options in your response
+- Verify movement options do not loop back to current state
+
 Conversation history:
 {self._format_history(history)}
 """
         return prompt
+    
+    def validate_slots_complete(
+        self,
+        state_id: str,
+        slots: Dict[str, Optional[str]]
+    ) -> bool:
+        """スロットが全て埋まっているかチェック"""
+        state = self._get_state(state_id)
+        required_slots = state.required_slots
+        
+        # 必須スロットがない場合（ゴールStateなど）
+        if not required_slots:
+            return True
+        
+        # 全ての必須スロットが埋まっているかチェック
+        for slot in required_slots:
+            value = slots.get(slot)
+            if value is None or value == "":
+                return False
+        
+        return True
     
     def _format_slots(
         self,
