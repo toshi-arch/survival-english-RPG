@@ -224,7 +224,7 @@ graph TB
 ##### 2. 状態管理レイヤー
 - **責任**: ゲーム状態の管理と更新ロジック
 - **技術**: React Context API + useReducer
-- **管理対象**: 現在のState、Required_Slot、会話履歴、ペナルティ状態
+- **管理対象**: 現在のState、Required_Slot、会話履歴
 
 ##### 3. APIクライアントレイヤー
 - **責任**: バックエンドAPIとの通信
@@ -242,7 +242,7 @@ graph TB
 ##### 2. ゲームロジックレイヤー
 - **責任**: ゲームルール、State遷移、スロット管理
 - **技術**: Python（Pydanticモデル）
-- **機能**: シナリオ管理、応答生成、ペナルティ計算
+- **機能**: シナリオ管理、応答生成
 
 ##### 3. OpenAI統合レイヤー
 - **責任**: OpenAI APIとの通信
@@ -458,10 +458,10 @@ interface AudioState {
 interface GameState {
   scenario: Scenario;
   currentStateId: string;
+  visitedStateIds: string[];
   requiredSlots: Record<string, string | null>;
   conversationHistory: Message[];
   movementOptions: MovementOption[] | null;
-  penaltyState: PenaltyState;
   audioState: AudioState;
 }
 
@@ -472,7 +472,6 @@ type GameAction =
   | { type: 'SHOW_MOVEMENT_OPTIONS'; payload: MovementOption[] }
   | { type: 'SELECT_MOVEMENT'; payload: string }
   | { type: 'TRANSITION_STATE'; payload: { newStateId: string } }
-  | { type: 'APPLY_PENALTY'; payload: PenaltyType }
   | { type: 'TOGGLE_VOICE_OUTPUT' }
   | { type: 'SET_RECORDING'; payload: boolean };
 
@@ -653,17 +652,9 @@ interface GameSession {
   currentStateId: string;
   requiredSlots: Record<string, string | null>;
   conversationHistory: Message[];
-  penaltyState: PenaltyState;
   startTime: Date;
   completedAt?: Date;
   isCompleted: boolean;
-}
-
-interface PenaltyState {
-  lives: number;
-  maxLives: number;
-  hintsUsed: number;
-  wrongMoves: number;
 }
 ```
 
@@ -1495,7 +1486,7 @@ Phase 1では、以下を実装します：
 2. **状態管理**: GameStateContext + useReducer
 3. **静的データ**: 自由の女神シナリオの完全な定義
 4. **静的応答システム**: キーワードベースの応答マッチング
-5. **State遷移ロジック**: 移動選択とペナルティシステム
+5. **State遷移ロジック**: 移動選択とスロット管理
 6. **開発環境**: Docker/.devcontainer設定（フロントエンドのみ）
 
 Phase 1では実装しません：
@@ -1706,7 +1697,7 @@ export function processUserMessage(
 - **カラースキーム**: 
   - プライマリ: ブルー系（信頼感）
   - アクセント: グリーン系（成功・進捗）
-  - エラー: レッド系（警告・ペナルティ）
+  - エラー: レッド系（警告・エラー）
 - **タイポグラフィ**: 読みやすいサンセリフフォント
 - **アニメーション**: 控えめなトランジション効果
 
@@ -1724,8 +1715,7 @@ Phase 1で以下のフローが完全に動作することを確認します：
 
 誤った選択肢を選んだ場合：
 - Wrong Placeに遷移
-- ペナルティが適用される（ライフ減少）
-- 前のStateに戻るか、ゲームオーバー
+- 前のStateに戻るか、ゲームを再開
 
 
 ## 正確性プロパティ
@@ -1800,27 +1790,7 @@ Phase 1で以下のフローが完全に動作することを確認します：
 
 ---
 
-### Property 8: 誤った選択によるペナルティ適用
-
-*任意の*GameStateとMovementOptionについて、isCorrect=falseのMovementOptionを選択したとき、以下のいずれかが発生する必要があります：
-- PenaltyStateが更新される（lives減少、wrongMoves増加など）
-- currentStateIdがisError=trueのStateに遷移する
-
-**検証要件: 3.5, 5.1**
-
----
-
-### Property 9: 段階的なゲームオーバー
-
-*任意の*GameSessionについて、以下が真である必要があります：
-- 1回の誤った選択後、isCompletedはfalseのままである（lives > 0の場合）
-- PenaltyState.livesが0に達したとき、ゲームは終了状態になる（isCompletedまたは専用のゲームオーバーフラグ）
-
-**検証要件: 5.3, 5.5**
-
----
-
-### Property 10: Information Noteの完全な表示
+### Property 8: Information Noteの完全な表示
 
 *任意の*GameStateについて、Information Noteのレンダリング結果は以下を満たす必要があります：
 - 現在のStateのすべてのrequiredSlotsが表示される
@@ -1831,7 +1801,7 @@ Phase 1で以下のフローが完全に動作することを確認します：
 
 ---
 
-### Property 11: State遷移後の状態保持
+### Property 9: State遷移後の状態保持
 
 *任意の*GameSessionについて、State遷移（currentStateIdの変更）の前後で、requiredSlotsに既に設定されている値（null以外）は保持される必要があります（新しいスロットが追加されることはあっても、既存の値が失われることはない）。
 
@@ -1839,7 +1809,7 @@ Phase 1で以下のフローが完全に動作することを確認します：
 
 ---
 
-### Property 12: 会話履歴の完全性
+### Property 10: 会話履歴の完全性
 
 *任意の*GameStateについて、以下が真である必要があります：
 - SEND_MESSAGEアクションをdispatchした後、conversationHistoryに新しいrole='user'のMessageが追加される
@@ -1850,7 +1820,7 @@ Phase 1で以下のフローが完全に動作することを確認します：
 
 ---
 
-### Property 13: NPCResponse構造の完全性
+### Property 11: NPCResponse構造の完全性
 
 *任意の*有効なNPCResponseについて、以下が真である必要があります：
 - npcMessageフィールドが存在し、空でない文字列である

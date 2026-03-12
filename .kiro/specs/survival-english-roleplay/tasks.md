@@ -29,7 +29,7 @@
 ### 2. 型定義とデータモデルの実装
 
 - [x] 2.1 型定義ファイルの作成
-  - `types/index.ts`にすべての型定義を実装（Scenario, State, Message, NPCResponse, GameSession, PenaltyState, MovementOption, AudioState）
+  - `types/index.ts`にすべての型定義を実装（Scenario, State, Message, NPCResponse, GameSession, MovementOption, AudioState）
   - _要件: 1.1, 2.1, 3.1, 5.2, 7.1, 8.1, 10.2_
 
 - [x] 2.2 自由の女神シナリオデータの作成
@@ -71,15 +71,15 @@
   - _要件: 1.2, 7.4, 8.6_
 
 - [x] 4.2 Reducerアクションの実装
-  - SEND_MESSAGE, RECEIVE_NPC_RESPONSE, UPDATE_SLOTS, SHOW_MOVEMENT_OPTIONS, SELECT_MOVEMENT, TRANSITION_STATE, APPLY_PENALTY, TOGGLE_VOICE_OUTPUT, SET_RECORDINGアクションを実装
+  - SEND_MESSAGE, RECEIVE_NPC_RESPONSE, UPDATE_SLOTS, SHOW_MOVEMENT_OPTIONS, SELECT_MOVEMENT, TRANSITION_STATE, TOGGLE_VOICE_OUTPUT, SET_RECORDINGアクションを実装
   - 各アクションの状態更新ロジック
-  - _要件: 2.6, 3.4, 3.5, 5.1, 7.2, 8.6, 8.7_
+  - _要件: 2.6, 3.4, 3.5, 7.2, 8.6, 8.7_
 
 - [x] 4.3 ゲームロジックの実装
-  - `lib/gameLogic.ts`にState遷移ロジック、スロット完全性チェック、ペナルティ適用ロジックを実装
+  - `lib/gameLogic.ts`にState遷移ロジック、スロット完全性チェックを実装
   - shouldShowMovementOptions関数
   - processUserMessage関数
-  - _要件: 2.1, 3.4, 3.5, 5.1_
+  - _要件: 2.1, 3.4, 3.5_
 
 - [ ]* 4.4 状態管理のユニットテスト
   - Reducerの各アクションのテスト
@@ -174,7 +174,6 @@
 - [x] 8.1 統合テストの実施
   - 自由の女神シナリオの完全なプレイスルーテスト
   - すべてのState遷移の動作確認
-  - ペナルティシステムの動作確認
   - UI/UXの確認
   - _要件: 11.3, 11.4, 11.5_
 
@@ -330,12 +329,10 @@
   - **Property 5: 単語レベル入力の受け入れ** - 検証要件: 2.3
   - **Property 6: スロット更新の伝播** - 検証要件: 2.6
   - **Property 7: 正しい選択によるState遷移** - 検証要件: 3.4
-  - **Property 8: 誤った選択によるペナルティ適用** - 検証要件: 3.5, 5.1
-  - **Property 9: 段階的なゲームオーバー** - 検証要件: 5.3, 5.5
-  - **Property 10: Information Noteの完全な表示** - 検証要件: 7.1, 7.3
-  - **Property 11: State遷移後の状態保持** - 検証要件: 7.4
-  - **Property 12: 会話履歴の完全性** - 検証要件: 8.1, 8.6, 8.7
-  - **Property 13: NPCResponse構造の完全性** - 検証要件: 10.2, 10.3
+  - **Property 8: Information Noteの完全な表示** - 検証要件: 7.1, 7.3
+  - **Property 9: State遷移後の状態保持** - 検証要件: 7.4
+  - **Property 10: 会話履歴の完全性** - 検証要件: 8.1, 8.6, 8.7
+  - **Property 11: NPCResponse構造の完全性** - 検証要件: 10.2, 10.3
 
 ### 16. チェックポイント - Phase 2完了確認
 

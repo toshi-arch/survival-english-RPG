@@ -20,7 +20,6 @@
 - **Text-to-Speech**: テキストを音声に変換する機能（TTS）
 - **Voice_Output**: AI_NPCの応答を音声で出力する機能
 - **Voice_Mode**: 音声入力と音声出力の両方を使用する会話モード
-- **Penalty_System**: 誤った選択に対するフィードバック機構
 - **Movement_Option**: Userが選択可能な移動先の選択肢
 - **Scenario**: 特定の出発地とゴールを持つゲームストーリー（例：JFK空港から自由の女神）
 
@@ -62,7 +61,7 @@
 3. THE Game_System SHALL 正しいMovement_Optionと誤ったMovement_Optionの両方を含める
 4. WHEN UserがMovement_Optionを選択する、THE AI_NPC SHALL 最終確認を行う
 5. WHEN すべてのRequired_Slotが正しく埋められている、THE Game_System SHALL 次のStateへの遷移を許可する
-6. WHEN Required_Slotが不完全または誤っている、THE Game_System SHALL エラーStateに遷移するかPenalty_Systemを適用する
+6. WHEN Required_Slotが不完全または誤っている、THE Game_System SHALL エラーStateに遷移する
 
 ### 要件4: 初心者に優しいAI NPCの振る舞い
 
@@ -76,19 +75,7 @@
 4. WHEN Userが単語やフレーズを使用する、THE AI_NPC SHALL 意図を解釈し適切に応答する
 5. THE AI_NPC SHALL ゲームプレイ中にキャラクターを破って言語指導を提供しない
 
-### 要件5: 誤った選択に対するペナルティシステム
-
-**ユーザーストーリー:** ユーザーとして、間違いを犯したときに意味のあるフィードバックを受けたい。そうすることで、即座にゲームオーバーにならずにエラーから学べるから。
-
-#### 受け入れ基準
-
-1. WHEN Userが誤った移動決定を行う、THE Penalty_System SHALL 結果を適用する
-2. THE Penalty_System SHALL ライフ減少、時間減少、ヒント減少、またはNPCの態度変化のうち少なくとも1つのペナルティタイプをサポートする
-3. THE Game_System SHALL 1回の間違いの後に即座にゲームを終了しない
-4. WHEN ペナルティが適用される、THE Game_System SHALL Userにフィードバックを提供する
-5. WHEN ペナルティ条件が終了状態に達する、THE Game_System SHALL Scenarioを終了する
-
-### 要件6: ビジュアルマップインターフェース
+### 要件5: ビジュアルマップインターフェース
 
 **ユーザーストーリー:** ユーザーとして、マップ上で現在地と利用可能な目的地を見たい。そうすることで、進捗と選択肢を理解できるから。
 
@@ -100,7 +87,7 @@
 4. WHEN Userが情報を収集する、THE Map_UI SHALL 進捗を反映して更新する
 5. THE Map_UI SHALL 利用可能な場合にMovement_Optionを表示する
 
-### 要件7: 情報メモの表示
+### 要件6: 情報メモの表示
 
 **ユーザーストーリー:** ユーザーとして、収集した情報を見たい。そうすることで、決定を下すときに参照できるから。
 
@@ -112,7 +99,7 @@
 4. THE Information_Note SHALL Scenario内のState遷移を通じて情報を保持する
 5. THE Information_Note SHALL Chat_UIと並んで表示される
 
-### 要件8: 会話のためのチャットインターフェース
+### 要件7: 会話のためのチャットインターフェース
 
 **ユーザーストーリー:** ユーザーとして、AI NPCとコミュニケーションするための明確なチャットインターフェースが欲しい。そうすることで、自然に英会話を練習できるから。
 
@@ -134,7 +121,7 @@
 14. THE Chat_UI SHALL 固定高さのコンテナ内でメッセージ履歴をスクロール可能にする
 15. THE Chat_UI SHALL 会話が長くなってもMap_UIとInformation_Noteが常に見える位置に固定する
 
-### 要件9: 自由の女神シナリオの実装
+### 要件8: 自由の女神シナリオの実装
 
 **ユーザーストーリー:** ユーザーとして、JFK空港から自由の女神までのシナリオをプレイしたい。そうすることで、完全なゲームの旅を体験できるから。
 
@@ -146,7 +133,7 @@
 4. WHEN Userが自由の女神Scenarioを完了する、THE Game_System SHALL 成功を示す
 5. THE Wrong Place State SHALL 情報不足のためのエラーStateとして機能する
 
-### 要件10: JSONベースのAI応答フォーマット
+### 要件9: JSONベースのAI応答フォーマット
 
 **ユーザーストーリー:** 開発者として、構造化されたJSON形式でAI応答を受け取りたい。そうすることで、ゲーム状態の更新を確実に解析および処理できるから。
 
@@ -158,7 +145,7 @@
 4. WHEN State遷移が可能である、THE JSON応答 SHALL 利用可能なMovement_Optionを示す
 5. THE Game_System SHALL 処理前にJSON応答を検証する
 
-### 要件11: フェーズ1の静的プロトタイプ実装
+### 要件10: フェーズ1の静的プロトタイプ実装
 
 **ユーザーストーリー:** 開発者として、固定応答を持つフロントエンドのみのプロトタイプを構築したい。そうすることで、AIを統合する前にUI/UXを検証できるから。
 
