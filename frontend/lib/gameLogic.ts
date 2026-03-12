@@ -1,8 +1,8 @@
 /**
  * ゲームロジック
  * 
- * State遷移、スロット完全性チェック、ペナルティ適用などのゲームルール
- * 要件: 2.1, 3.4, 3.5, 5.1
+ * State遷移、スロット完全性チェックなどのゲームルール
+ * 要件: 2.1, 3.4, 3.5
  */
 
 import { State, MovementOption, Scenario } from '@/types';
@@ -156,30 +156,6 @@ export function processUserMessage(
     shouldShowOptions: shouldShow,
     movementOptions: shouldShow ? getMovementOptions(currentState) : null,
   };
-}
-
-// ============================================================================
-// ペナルティ判定
-// ============================================================================
-
-/**
- * ペナルティを適用すべきかどうかを判定
- * 
- * @param isCorrect - 選択が正しいかどうか
- * @returns ペナルティを適用すべき場合true
- */
-export function shouldApplyPenalty(isCorrect: boolean): boolean {
-  return !isCorrect;
-}
-
-/**
- * ゲームオーバー条件をチェック
- * 
- * @param lives - 残りライフ
- * @returns ゲームオーバーの場合true
- */
-export function isGameOver(lives: number): boolean {
-  return lives <= 0;
 }
 
 // ============================================================================

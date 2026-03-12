@@ -2,7 +2,7 @@
  * サバイバル英語ロールプレイゲームの型定義
  * 
  * このファイルはゲームシステムのすべてのTypeScript型定義を含みます。
- * 要件: 1.1, 2.1, 3.1, 5.2, 7.1, 8.1, 10.2
+ * 要件: 1.1, 2.1, 3.1, 7.1, 8.1, 10.2
  */
 
 // ============================================================================
@@ -100,21 +100,9 @@ export interface GameSession {
   currentStateId: string;
   requiredSlots: Record<string, string | null>;
   conversationHistory: Message[];
-  penaltyState: PenaltyState;
   startTime: Date;
   completedAt?: Date;
   isCompleted: boolean;
-}
-
-/**
- * PenaltyState - ペナルティとゲームオーバー条件を追跡
- * 要件: 5.2
- */
-export interface PenaltyState {
-  lives: number;
-  maxLives: number;
-  hintsUsed: number;
-  wrongMoves: number;
 }
 
 // ============================================================================
@@ -147,13 +135,12 @@ export interface GameState {
   requiredSlots: Record<string, string | null>;
   conversationHistory: Message[];
   movementOptions: MovementOption[] | null;
-  penaltyState: PenaltyState;
   audioState: AudioState;
 }
 
 /**
  * GameAction - ゲーム状態を変更できるすべてのアクション
- * 要件: 2.1, 3.1, 5.2, 7.1, 8.1
+ * 要件: 2.1, 3.1, 7.1, 8.1
  */
 export type GameAction =
   | { type: 'SEND_MESSAGE'; payload: { content: string } }
@@ -162,15 +149,8 @@ export type GameAction =
   | { type: 'SHOW_MOVEMENT_OPTIONS'; payload: MovementOption[] }
   | { type: 'SELECT_MOVEMENT'; payload: string }
   | { type: 'TRANSITION_STATE'; payload: { newStateId: string } }
-  | { type: 'APPLY_PENALTY'; payload: PenaltyType }
   | { type: 'TOGGLE_VOICE_OUTPUT' }
   | { type: 'SET_RECORDING'; payload: boolean };
-
-/**
- * PenaltyType - 適用可能なペナルティの種類
- * 要件: 5.2
- */
-export type PenaltyType = 'life_decrease' | 'time_decrease' | 'hint_decrease' | 'npc_attitude_change';
 
 // ============================================================================
 // API型（Phase 2）

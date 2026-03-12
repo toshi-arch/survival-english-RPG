@@ -64,12 +64,6 @@ function createInitialState(scenario: Scenario): GameState {
     requiredSlots,
     conversationHistory: [],
     movementOptions: null,
-    penaltyState: {
-      lives: 3,
-      maxLives: 3,
-      hintsUsed: 0,
-      wrongMoves: 0,
-    },
     audioState: {
       isRecording: false,
       isProcessing: false,
@@ -177,18 +171,7 @@ function gameStateReducer(state: GameState, action: GameAction): GameState {
         return state;
       }
 
-      // 誤った選択の場合はペナルティを適用
-      if (!selectedOption.isCorrect) {
-        return {
-          ...state,
-          penaltyState: {
-            ...state.penaltyState,
-            lives: state.penaltyState.lives - 1,
-            wrongMoves: state.penaltyState.wrongMoves + 1,
-          },
-        };
-      }
-
+      // 選択を記録（将来的にログや分析に使用可能）
       return state;
     }
 
@@ -219,28 +202,6 @@ function gameStateReducer(state: GameState, action: GameAction): GameState {
         visitedStateIds,
         requiredSlots,
         movementOptions: null,
-      };
-    }
-
-    // ペナルティ適用
-    case 'APPLY_PENALTY': {
-      const penaltyType = action.payload;
-      let updatedPenaltyState = { ...state.penaltyState };
-
-      switch (penaltyType) {
-        case 'life_decrease':
-          updatedPenaltyState.lives = Math.max(0, updatedPenaltyState.lives - 1);
-          break;
-        case 'hint_decrease':
-          updatedPenaltyState.hintsUsed += 1;
-          break;
-        default:
-          break;
-      }
-
-      return {
-        ...state,
-        penaltyState: updatedPenaltyState,
       };
     }
 
